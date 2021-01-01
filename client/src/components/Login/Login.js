@@ -1,150 +1,145 @@
 import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { showErrorMsg } from "../../helpers/message";
-import { showLoading } from "../../helpers/loading";
-import { setAuthentication, isAuthenticated } from "../../helpers/auth";
-import isEmpty from "validator/lib/isEmpty";
-import isEmail from "validator/lib/isEmail";
-import { signin } from "../../api/auth";
-
+import "./Login.css";
+import Signup from "../Signup/Signup";
 const Signin = () => {
-  let history = useHistory();
-
-  useEffect(() => {
-    if (isAuthenticated() && isAuthenticated().role === 1) {
-      history.push("/admin/dashboard");
-    } else if (isAuthenticated() && isAuthenticated().role === 0) {
-      history.push("/user/dashboard");
-    }
-  }, [history]);
-
-  const [formData, setFormData] = useState({
-    email: "jdoe@gmail.com",
-    password: "abc123",
-    errorMsg: false,
-    loading: false,
-  });
-
-  const { email, password, errorMsg, loading } = formData;
-
   /****************************
    * EVENT HANDLERS
    ***************************/
-  const handleChange = (evt) => {
-    setFormData({
-      ...formData,
-      [evt.target.name]: evt.target.value,
-      errorMsg: "",
-    });
+  const handleChange = (evt) => {};
+
+  let history = useHistory();
+  const [active, setActive] = useState(false);
+
+  const handleSignup = (e) => {
+    console.log("btn clicked");
+
+    setActive(!active);
   };
-
-  const handleSubmit = (evt) => {
-    evt.preventDefault();
-
-    // client-side validation
-    if (isEmpty(email) || isEmpty(password)) {
-      setFormData({
-        ...formData,
-        errorMsg: "All fields are required",
-      });
-    } else if (!isEmail(email)) {
-      setFormData({
-        ...formData,
-        errorMsg: "Invalid email",
-      });
-    } else {
-      const { email, password } = formData;
-      const data = { email, password };
-
-      setFormData({ ...formData, loading: true });
-
-      signin(data)
-        .then((response) => {
-          setAuthentication(response.data.token, response.data.user);
-
-          if (isAuthenticated() && isAuthenticated().role === 1) {
-            console.log("Redirecting to admin dashboard");
-            history.push("/admin/dashboard");
-          } else {
-            console.log("Redirecting to user dashboard");
-            history.push("/user/dashboard");
-          }
-        })
-        .catch((err) => {
-          console.log("signin api function error: ", err);
-          setFormData({
-            ...formData,
-            loading: false,
-            errorMsg: err.response.data.errorMessage,
-          });
-        });
-    }
-  };
-
   /****************************
    * VIEWS
    ***************************/
-  const showSigninForm = () => (
-    <form className="signup-form" onSubmit={handleSubmit} noValidate>
-      {/* email */}
-      <div className="form-group input-group">
-        <div className="input-group-prepend">
-          <span className="input-group-text">
-            <i className="fa fa-envelope"></i>
-          </span>
-        </div>
-        <input
-          name="email"
-          value={email}
-          className="form-control"
-          placeholder="Email address"
-          type="email"
-          onChange={handleChange}
-        />
-      </div>
-      {/* password */}
-      <div className="form-group input-group">
-        <div className="input-group-prepend">
-          <span className="input-group-text">
-            <i className="fa fa-lock"></i>
-          </span>
-        </div>
-        <input
-          name="password"
-          value={password}
-          className="form-control"
-          placeholder="Create password"
-          type="password"
-          onChange={handleChange}
-        />
-      </div>
-      {/* signin button */}
-      <div className="form-group">
-        <button type="submit" className="btn btn-primary btn-block">
-          Signin
-        </button>
-      </div>
-      {/* already have account */}
-      <p className="text-center text-white">
-        Don't have an account? <Link to="/signup">Register here</Link>
-      </p>
-    </form>
-  );
-
-  /****************************
-   * RENDERER
-   ***************************/
   return (
-    <div className="signin-container">
-      <div className="row px-3 vh-100">
-        <div className="col-md-5 mx-auto align-self-center">
-          {errorMsg && showErrorMsg(errorMsg)}
-          {loading && <div className="text-center pb-4">{showLoading()}</div>}
-          {showSigninForm()}
+    <div className={`containa ${active ? "sign-up-mode" : ""}`}>
+      <div className="forms-container">
+        <div className="signin-signup">
+          <form action="#" className="sign-in-form form">
+            <h2 className="title">Sign in</h2>
+            <div className="input-field">
+              <i className="fas fa-user"></i>
+              <input type="text" placeholder="Username" />
+            </div>
+            <div className="input-field">
+              <i className="fas fa-lock"></i>
+              <input type="password" placeholder="Password" />
+            </div>
+            <input type="submit" value="Login" className="btn solid" />
+            <p className="social-text">Or Sign in with social platforms</p>
+            <div className="social-media">
+              <Link to="#" className="social-icon">
+                <i className="fab fa-facebook-f"></i>
+              </Link>
+              <Link to="#" className="social-icon">
+                <i className="fab fa-twitter"></i>
+              </Link>
+              <Link to="#" className="social-icon">
+                <i className="fab fa-google"></i>
+              </Link>
+              <Link to="#" className="social-icon">
+                <i className="fab fa-linkedin-in"></i>
+              </Link>
+            </div>
+          </form>
+          <Signup />
+        </div>
+      </div>
+
+      <div className="panels-container">
+        <div className="panel left-panel">
+          <div className="content">
+            <h3>New here ?</h3>
+            <p>
+              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Debitis,
+              ex ratione. Aliquid!
+            </p>
+            <button
+              className="btn transparent"
+              id="sign-up-btn"
+              onClick={handleSignup}
+            >
+              Sign up
+            </button>
+          </div>
+          <img src="images/log.svg" className="image" alt="" />
+        </div>
+        <div className="panel right-panel">
+          <div className="content">
+            <h3>One of us ?</h3>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum
+              laboriosam ad deleniti.
+            </p>
+            <button
+              className="btn transparent"
+              id="sign-in-btn"
+              onClick={handleSignup}
+            >
+              Sign in
+            </button>
+          </div>
+          <img src="images/register.svg" className="image" alt="" />
         </div>
       </div>
     </div>
   );
 };
+/*  <form classNameName="signup-form" onSubmit={handleSubmit} noValidate>
+      
+      <div classNameName="form-group input-group">
+        <div classNameName="input-group-prepend">
+          <span classNameName="input-group-text">
+            <i classNameName="fa fa-envelope"></i>
+          </span>
+        </div>
+        <input
+          name="email"
+          value={email}
+          classNameName="form-control"
+          placeholder="Email address"
+          type="email"
+          onChange={handleChange}
+        />
+      </div>
+      
+      <div classNameName="form-group input-group">
+        <div classNameName="input-group-prepend">
+          <span classNameName="input-group-text">
+            <i classNameName="fa fa-lock"></i>
+          </span>
+        </div>
+        <input
+          name="password"
+          value={password}
+          classNameName="form-control"
+          placeholder="Create password"
+          type="password"
+          onChange={handleChange}
+        />
+      </div>
+
+      <div classNameName="form-group">
+        <button type="submit" classNameName="btn btn-primary btn-block">
+          Signin
+        </button>
+      </div>
+      
+      <p classNameName="text-center text-white">
+        Don't have an account? <Link to="/signup">Register here</Link>
+      </p>
+    </form> */
+
+/****************************
+ * RENDERER
+ ***************************/
 
 export default Signin;
